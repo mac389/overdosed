@@ -39,11 +39,14 @@ What linguistic features are unique to discussions of nonmedical substance use?
 3. **Calculate** the relative abundance of each component of the metadata, _e.g._
 	<br> Are the geographic distributions the same?
 	<br> What latent attributes differ?
-	
+
 ### Quickstart
 
      git clone https://github.com/mac389/overdosed.git
      cd overdosed
 
 ### Dependencies
-1. Tweepy (3.3.0)
+1. [Tweepy (3.3.0)](https://github.com/tweepy/tweepy)
+1. Gensim (0.10.3)
+1. Seaborn (0.6dev, for visualization)
+1. NumPy (1.9.1)
