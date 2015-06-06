@@ -15,7 +15,11 @@ What linguistic features are unique to discussions of nonmedical substance use?
    <br>Stream 1: Unfiltered. 
    <br>Stream 2: Filtered for keywords describing substance of interest. 
 
-   <b>Phase 2</b> 
+2. Develop a classifier. 
+    <br> Sensitive (rule-in) component: Identify words present in both streams
+    <br> Specific (rule-out) component: Identify words 
+
+<b>Phase 2</b> 
 
 ### Quickstart
 
