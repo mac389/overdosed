@@ -7,10 +7,14 @@ What linguistic features are unique to discussions of nonmedical substance use?
 
 ### Methodology
 
-  _overdosed 0.1_ uses <a href="http://en.wikipedia.org/wiki/Latent_semantic_analysis">latent semantic analysis</a>
+  _overdosed 0.1_ uses <a href="http://en.wikipedia.org/wiki/Latent_semantic_analysis">latent semantic analysis</a> to identify the words or phrases that distinguish tweets discussing the use of substances from other substances. There are two phases:
+
+  1. 
 
 ### Quickstart
 
      git clone https://github.com/mac389/overdosed.git
      cd overdosed
 
+### Dependencies
+1. Tweepy (3.3.0)
