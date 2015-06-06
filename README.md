@@ -35,6 +35,11 @@ What linguistic features are unique to discussions of nonmedical substance use?
 2. **Partition** the unfiltered Twitter stream into 
 	<br> All tweets discussing use of the substance
 	<br> All other tweets
+
+3. **Calculate** the relative abundance of each component of the metadata, _e.g._
+	<br> Are the geographic distributions the same?
+	<br> What latent attributes differ?
+	
 ### Quickstart
 
      git clone https://github.com/mac389/overdosed.git
