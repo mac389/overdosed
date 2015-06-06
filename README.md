@@ -24,11 +24,17 @@ What linguistic features are unique to discussions of nonmedical substance use?
     <br> Same for rule-out component. (_i.e._ Taxonomize)
 
 1. **Test** the classifier.
-	<br> Sample the two streams again
-	<br> Curate a sample
+	<br> Curate new samples from the two streams
 	<br> Adjust the words needed to be present or absent in a tweet to achieve an acceptable sensitivity and specificity
+
 <b>Phase 2</b> 
 
+1. **Sample** the unfiltered Twitter gardenhose (1% sampler)
+   <br> Cannot calculate valid sample statistics if you combine streams
+
+2. **Partition** the unfiltered Twitter stream into 
+	<br> All tweets discussing use of the substance
+	<br> All other tweets
 ### Quickstart
 
      git clone https://github.com/mac389/overdosed.git
