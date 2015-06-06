@@ -44,9 +44,12 @@ What linguistic features are unique to discussions of nonmedical substance use?
 
      git clone https://github.com/mac389/overdosed.git
      cd overdosed
+     sh setup.sh
 
 ### Dependencies
 1. [Tweepy (3.3.0)](https://github.com/tweepy/tweepy)
-1. Gensim (0.10.3)
-1. Seaborn (0.6dev, for visualization)
+1. [Gensim (0.10.3)](https://github.com/piskvorky/gensim.git)
+1. [Seaborn (0.6dev, for visualization, also requires pandas)](http://stanford.edu/~mwaskom/software/seaborn/installing.html)
 1. NumPy (1.9.1)
+1. Matplotlib
+1. SciPy
