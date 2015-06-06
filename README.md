@@ -15,10 +15,18 @@ What linguistic features are unique to discussions of nonmedical substance use?
    <br>Stream 1: Unfiltered. 
    <br>Stream 2: Filtered for keywords describing substance of interest. 
 
-2. Develop a classifier. 
-    <br> Sensitive (rule-in) component: Identify words present in both streams
-    <br> Specific (rule-out) component: Identify words 
+1. Develop the classifier. 
+    <br> Sensitive (rule-in) component: Identify words present in both streams. 
+    <br> Specific (rule-out) component: Identify words present in filtered stream but not unfiltered stream. (Filtered stream - unfiltered stream)
 
+1. Analyze the classifier.
+    <br> Identify groups of semantically related words in the rule-in component. 
+    <br> Same for rule-out component. (_i.e._ Taxonomize)
+
+1. Test the classifier.
+	<br> Sample the two streams again
+	<br> Curate a sample
+	<br> Adjust the words needed to be present or absent in a tweet to achieve an acceptable sensitivity and specificity
 <b>Phase 2</b> 
 
 ### Quickstart
