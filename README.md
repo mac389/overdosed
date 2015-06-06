@@ -9,7 +9,7 @@ What linguistic features are unique to discussions of nonmedical substance use?
 
   _overdosed 0.1_ uses <a href="http://en.wikipedia.org/wiki/Latent_semantic_analysis">latent semantic analysis</a> to identify the words or phrases that distinguish tweets discussing the use of substances from other substances. There are two phases:
 
-  #### Phase 1 
+   <b>Phase 1</b> 
 
 ### Quickstart
 
