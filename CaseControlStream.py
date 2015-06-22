@@ -68,11 +68,11 @@ class listener(StreamListener):
 
     def on_data(self, data):
         all_data = json.loads(data)       
-        #tweet = all_data["text"]        
-        #username = all_data["user"]["screen_name"]
-        filename = os.path.join(self.path,'%s_%s'%(self.outname,datetime.now().strftime('%Y-%m-%d-%H-%M')))
-        with gzip.open(filename,"a") as fid: #This open and closes the same file a lot of times. Hack for now. 
-            print>>fid,all_data
+        tweet_text = ' '.join(word for word in all_data["text"].split() if all(ord(ch)<128 for ch in word))     
+        tweet_id = all_data["id"]
+        filename = os.path.join(self.path,'%s_%s.txt'%(self.outname,datetime.now().strftime('%Y-%m-%d-%H')))
+        with open(filename,"a") as fid: #This open and closes the same file a lot of times. Hack for now. 
+            print>>fid, ' %s | %s'%(tweet_text,tweet_id)
             self.count += 1 
             if self.progress_bar:
                 self.progress_bar.next()
@@ -95,6 +95,15 @@ auth.set_access_token(opts.keys['twitter']['access_token'],opts.keys['twitter'][
 
 TWEETS_PER_FILE = 10000
 
+try:
+    bar = Bar('Acquiring case tweets', max=opts.MAX_NUMBER_OF_TWEETS)
+    caseStream = Stream(auth, listener(path=case_path,
+            outname='opioid', MAX_NUMBER_OF_TWEETS=opts.MAX_NUMBER_OF_TWEETS,TWEETS_PER_FILE=TWEETS_PER_FILE,
+            progress_bar = bar)) 
+    caseStream.filter(track=search_terms)
+except Exception as e:
+    print e
+
 bar = Bar('Acquiring control tweets', max=opts.MAX_NUMBER_OF_TWEETS)
 control_stream = twitter.TwitterStream(
     auth=twitter.OAuth(opts.keys['twitter']['access_token'], opts.keys['twitter']['access_token_secret'], 
@@ -111,12 +120,3 @@ for tweet in iterator:
     if counter > opts.MAX_NUMBER_OF_TWEETS:
         break
 bar.finish()
-
-try:
-    bar = Bar('Acquiring case tweets', max=opts.MAX_NUMBER_OF_TWEETS)
-    caseStream = Stream(auth, listener(path=case_path,
-            outname='opioid', MAX_NUMBER_OF_TWEETS=opts.MAX_NUMBER_OF_TWEETS,TWEETS_PER_FILE=TWEETS_PER_FILE,
-            progress_bar = bar)) 
-    caseStream.filter(track=search_terms)
-except Exception as e:
-    print e
