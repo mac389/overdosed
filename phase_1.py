@@ -1,5 +1,7 @@
 import os, gzip, json,tokenize,token
 
+import utils as tech
+
 from pprint import pprint
 #Rule-in component
 
@@ -13,6 +15,7 @@ corpus = {'case':[],'control':[]}
 case_contents = []
 for filename in os.listdir(CASE):
 	if filename.endswith('.gz'):
+		print filename
 		with gzip.open(os.path.join(CASE,filename),'rb') as fid:
-			print json.loads(fid.read())
+			print tech.json_decode(fid.read())
 
