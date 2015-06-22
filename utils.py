@@ -1,4 +1,8 @@
-import token, tokenize, json, re, string
+import token, tokenize, json, re, string, nltk 
+
+import matplotlib.pyplot as plt 
+
+from matplotlib import rcParams
 from cStringIO import StringIO
 
 '''
@@ -12,8 +16,10 @@ from cStringIO import StringIO
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import stopwords
 lmtzr = WordNetLemmatizer()
+rcParams['text.usetex'] = True
 
 
+format = lambda txt: r'\Large \textbf{\textsc{%s}}'%txt
 def find_all(a_string, sub):
     result = []
     k = 0
@@ -56,14 +62,17 @@ def get_field_damaged_string(astring):
 
 def cleanse(data,remove_stopwords=True):
     #extract text
-    corpus = [datum.lower().split() for datum in data]
+    corpus = [nltk.word_tokenize(datum.lower()) for datum in data]
     
     #remove URLs and stopwords
     corpus = [[word for word in text if not word.startswith('http')
-                    and word not in stopwords.words('english')] for text in corpus]
+                    and word not in stopwords.words('english')
+                    and word not in ['rt',"'s",'bt','em']
+                    and '\u' not in word
+                    and '\\x' not in word] for text in corpus]
     
     #remove unicode
-    corpus = [[word for word in text if all([ord(ch)<128 for ch in word])
+    corpus = [[word.replace('\\','') for word in text if all([ord(ch)<128 for ch in word])
                and not all([ch in string.punctuation for ch in word])] for text in corpus]
 
     corpus = [[lmtzr.lemmatize(word) for word in text] for text in corpus]
@@ -91,6 +100,23 @@ def adjust_spines(ax, spines=['left','bottom']):
         # no xaxis ticks
         ax.xaxis.set_ticks([])
 
+def freqplot(tokens,n=50,filename=None):
+  '''Input is a list of tokens'''
+  words,freqs = zip(*nltk.FreqDist(tokens).most_common(n))
+
+  fig = plt.figure()
+  ax = fig.add_subplot(111)
+  ax.plot(freqs,'k--')
+
+  adjust_spines(ax)
+
+  ax.set_xticks(range(len(freqs)))
+  ax.set_xticklabels(map(format,words),rotation='vertical')
+  ax.set_ylabel(format('Count'))
+
+  plt.savefig(filename)
+  plt.savefig('%s.tiff'%filename)
+  plt.close()
 
 def fixLazyJson (in_text):
   tokengen = tokenize.generate_tokens(StringIO(in_text).readline)
