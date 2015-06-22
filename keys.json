@@ -3,4 +3,6 @@
 "access_token":"508152927-moXNfwk1y5EFWRjiuq1Dy9u0zc5gNtr60ptMVgVz",
 "access_token_secret":"K5X4hu7xXdLNF0Hu1J89YrpjqFGMTpwQ26klk9ljrc"},
 "dropbox":{"app_key":"wwwhdn2b2fds8y6","secret_key":"lb1fxwxepuonaed",
-"access_token":"pOpTAoTEFcsAAAAAAAALf7Fl1MsLcvUn3MMk3e_t1-j2B2uVeYcA2rxYf3fz87Uk"}}
+"access_token":"pOpTAoTEFcsAAAAAAAALf7Fl1MsLcvUn3MMk3e_t1-j2B2uVeYcA2rxYf3fz87Uk"},
+"youtube":{"server-api":"AIzaSyAe-JITdHfLxq7wH3j0xxCw8EzlVIY2CZI",
+			"client-api":"AIzaSyCDP3xDsGcdX49KYyfg-TqqfS43iKnFntw","OAuth-id":"245294051504.apps.googleusercontent.com"}}
