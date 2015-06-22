@@ -106,7 +106,7 @@ counter = 0
 
 for tweet in iterator:
     filename = os.path.join(control_path,'control_%d'%(counter/TWEETS_PER_FILE))
-    with gzip.open(filename,'a') as fid:
+    with open(filename,'a') as fid:
         print>>fid,tweet
         counter += 1
         bar.next()
