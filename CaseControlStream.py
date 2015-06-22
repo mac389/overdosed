@@ -19,6 +19,7 @@ op.add_option('--t', dest='keys', type='str', help='Path of key files')
 op.add_option('--k', dest='keywords',type='str',help='Path of keywords')
 op.add_option('--o',type="str", dest="outpath")
 op.add_option('--m',type='int',dest="MAX_NUMBER_OF_TWEETS",default=100)
+op.add_option('--c', dest="isCase", action="store_false",default=True,help="Pass to sample without filters")
 op.print_help()
 
 opts,args = op.parse_args()
@@ -112,11 +113,12 @@ for tweet in iterator:
         break
 bar.finish()
 
-try:
-    bar = Bar('Acquiring case tweets', max=opts.MAX_NUMBER_OF_TWEETS)
-    caseStream = Stream(auth, listener(path=case_path,
-            outname='opioid', MAX_NUMBER_OF_TWEETS=opts.MAX_NUMBER_OF_TWEETS,TWEETS_PER_FILE=TWEETS_PER_FILE,
-            progress_bar = bar)) 
-    caseStream.filter(track=search_terms)
-except Exception as e:
-    print e
+if opts.isCase:
+    try:
+        bar = Bar('Acquiring case tweets', max=opts.MAX_NUMBER_OF_TWEETS)
+        caseStream = Stream(auth, listener(path=case_path,
+                outname='opioid', MAX_NUMBER_OF_TWEETS=opts.MAX_NUMBER_OF_TWEETS,TWEETS_PER_FILE=TWEETS_PER_FILE,
+                progress_bar = bar)) 
+        caseStream.filter(track=search_terms)
+    except Exception as e:
+        print e
