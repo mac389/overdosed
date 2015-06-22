@@ -69,13 +69,14 @@ def cleanse(data,remove_stopwords=True):
                     and word not in stopwords.words('english')
                     and word not in ['rt',"'s",'bt','em']
                     and '\u' not in word
-                    and '\\x' not in word] for text in corpus]
+                    and '\\x' not in word
+                    and 't.co' not in word] for text in corpus]
     
     #remove unicode
-    corpus = [[word.replace('\\','') for word in text if all([ord(ch)<128 for ch in word])
+    corpus = [[word.replace('\\','').replace(',','') for word in text if all([ord(ch)<128 for ch in word])
                and not all([ch in string.punctuation for ch in word])] for text in corpus]
 
-    corpus = [[lmtzr.lemmatize(word) for word in text] for text in corpus]
+    corpus = [[lmtzr.lemmatize(word) for word in text if not word.isdigit()] for text in corpus]
     
     return corpus
 
@@ -114,6 +115,7 @@ def freqplot(tokens,n=50,filename=None):
   ax.set_xticklabels(map(format,words),rotation='vertical')
   ax.set_ylabel(format('Count'))
 
+  plt.tight_layout()
   plt.savefig(filename)
   plt.savefig('%s.tiff'%filename)
   plt.close()
