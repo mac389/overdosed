@@ -30,6 +30,7 @@ for item in items:
 	relevant.append(item[TEXT]) if int(item[RATING]) == 1 else irrelevant.append(item[TEXT])
 
 relevant = list(itertools.chain.from_iterable(tech.cleanse(relevant)))
+relevant += ['purple']
 irrelevant =  list(itertools.chain.from_iterable(tech.cleanse(irrelevant)))
 
 '''
