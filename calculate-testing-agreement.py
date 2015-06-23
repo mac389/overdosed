@@ -12,6 +12,7 @@ with open('testing-sample-w-ratings','rU') as automatic_rating_file:
 	automatic_ratings = [row for row in csv.reader(automatic_rating_file,delimiter='\t')]
 
 
+
 my_rating_numbers = np.array([x[-1] for x in my_ratings]).astype(int)
 automatic_rating_numbers = np.array([True if x[1]=='True' else False for x in automatic_ratings]).astype(int)
 pprint(automatic_rating_numbers)
