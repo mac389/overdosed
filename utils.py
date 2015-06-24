@@ -18,6 +18,10 @@ from nltk.corpus import stopwords
 lmtzr = WordNetLemmatizer()
 rcParams['text.usetex'] = True
 
+standard_spelling = {'whaaaattttt':'what','annnnnnnd':'and','yeahh':'yeah','yeahhh':'yeah','wwhite':'white',
+'toooo':'to'}
+
+
 
 format = lambda txt: r'\Large \textbf{\textsc{%s}}'%txt
 def find_all(a_string, sub):
@@ -31,6 +35,34 @@ def find_all(a_string, sub):
             result.append(k)
             k += 1 #change to k += len(sub) to not search overlapping results
     return result
+
+def isdecimal(aStr):
+  return all([ch.isdigit() or ch in string.punctuation for ch in aStr])
+
+def isusername(aStr):
+  return all([any([ch.isdigit() for ch in aStr]), any([ch.isalpha() for ch in aStr]),len(aStr)>3])
+
+def count_usernames(set_of_words):
+  return [word for word in set_of_words if isusername(word)]
+
+def extract_tokens(list_of_tweets_as_str, count_usernames=True,is_single=False):
+  if is_single:
+    list_of_words_in_tweet = set([word for word in nltk.word_tokenize(list_of_tweets_as_str.lower()) if not word.isdigit() and not isdecimal(word)])
+  else:
+    list_of_words_in_tweet = set([word for tweet in list_of_tweets_as_str for word in nltk.word_tokenize(tweet.lower()) 
+      if not word.isdigit() and not isdecimal(word)])
+  list_of_words_in_tweet -= set(string.punctuation)
+  list_of_words_in_tweet = {token.replace('-','').replace('_','').replace('.','').replace("'",'').replace('/','') 
+                for token in list_of_words_in_tweet if len(token)>3}
+  list_of_words_in_tweet = {token if token not in standard_spelling else standard_spelling[token] for token in list_of_words_in_tweet}
+
+  list_of_words_in_tweet =  {lmtzr.lemmatize(token,'v' if len(token)>4 and token.endswith('ing') or token.endswith('ed') else 'n')
+          for token in list_of_words_in_tweet}
+  
+  usernames = {token for token in list_of_words_in_tweet if isusername(token)} if count_usernames else {}
+  return ({token for token in list_of_words_in_tweet 
+          if all([token not in stopwords.words('english'),len(token)>3, not isusername(token)])},usernames)
+
 
 def regularize_json(json_string):
   json_string = re.sub(r"{\s*'?(\w)", r'{"\1', json_string)
