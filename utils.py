@@ -19,7 +19,8 @@ lmtzr = WordNetLemmatizer()
 rcParams['text.usetex'] = True
 
 standard_spelling = {'whaaaattttt':'what','annnnnnnd':'and','yeahh':'yeah','yeahhh':'yeah','wwhite':'white',
-'toooo':'to'}
+'toooo':'to','hahhaha':'ha','fellah':'fellow','poppin':'popping','feelin':'feeling','thouygh':'though','sadsadsad':'sad',
+'longterm':' long','orang':'orange','takin':'taking'}
 
 
 
@@ -42,17 +43,25 @@ def isdecimal(aStr):
 def isusername(aStr):
   return all([any([ch.isdigit() for ch in aStr]), any([ch.isalpha() for ch in aStr]),len(aStr)>3])
 
+def hasvowels(aStr):
+  return any([ch in 'aeiou' for ch in aStr])
+
 def count_usernames(set_of_words):
   return [word for word in set_of_words if isusername(word)]
 
+def word_tokenize(tweet):
+    my_verboten_punctuation = string.punctuation.replace('@','').replace('#','')
+    return [''.join([ch for ch in word if ch not in my_verboten_punctuation]) for word in tweet.split()]
+
 def extract_tokens(list_of_tweets_as_str, count_usernames=True,is_single=False):
   if is_single:
-    list_of_words_in_tweet = set([word for word in nltk.word_tokenize(list_of_tweets_as_str.lower()) if not word.isdigit() and not isdecimal(word)])
+    list_of_words_in_tweet = set([word for word in nltk.word_tokenize(list_of_tweets_as_str.lower()) 
+                                if all([not word.isdigit(),not isdecimal(word)])])
   else:
     list_of_words_in_tweet = set([word for tweet in list_of_tweets_as_str for word in nltk.word_tokenize(tweet.lower()) 
-      if not word.isdigit() and not isdecimal(word)])
+                    if all([not word.isdigit(),not isdecimal(word)])])
   list_of_words_in_tweet -= set(string.punctuation)
-  list_of_words_in_tweet = {token.replace('-','').replace('_','').replace('.','').replace("'",'').replace('/','') 
+  list_of_words_in_tweet = {token.replace('-','').replace('_','').replace('.','').replace("'",'').replace('/','').replace('*','') 
                 for token in list_of_words_in_tweet if len(token)>3}
   list_of_words_in_tweet = {token if token not in standard_spelling else standard_spelling[token] for token in list_of_words_in_tweet}
 
@@ -61,7 +70,7 @@ def extract_tokens(list_of_tweets_as_str, count_usernames=True,is_single=False):
   
   usernames = {token for token in list_of_words_in_tweet if isusername(token)} if count_usernames else {}
   return ({token for token in list_of_words_in_tweet 
-          if all([token not in stopwords.words('english'),len(token)>3, not isusername(token)])},usernames)
+          if all([token not in stopwords.words('english'),len(token)>3, not isusername(token),hasvowels(token)])},usernames)
 
 
 def regularize_json(json_string):
@@ -93,20 +102,18 @@ def get_field_damaged_string(astring):
     return (snippet,id_string)
 
 def cleanse(data,remove_stopwords=True):
-    #extract text
-    corpus = [nltk.word_tokenize(datum.lower()) for datum in data]
+    
+    corpus = [word_tokenize(datum.lower().strip()) for datum in data]
     
     #remove URLs and stopwords
     corpus = [[word for word in text if not word.startswith('http')
                     and word not in stopwords.words('english')
                     and word not in ['rt',"'s",'bt','em']
-                    and '\u' not in word
-                    and '\\x' not in word
-                    and 't.co' not in word] for text in corpus]
+                    and not any(['\u' in word,'\\x' in word,'t.co' in word, 'tco' in word])] for text in corpus]
     
     #remove unicode
     corpus = [[word.replace('\\','').replace(',','') for word in text if all([ord(ch)<128 for ch in word])
-               and not all([ch in string.punctuation for ch in word])] for text in corpus]
+               and not all([ch in string.punctuation.replace('@','').replace('#','') for ch in word])] for text in corpus]
 
     corpus = [[lmtzr.lemmatize(word) for word in text if not word.isdigit()] for text in corpus]
     
