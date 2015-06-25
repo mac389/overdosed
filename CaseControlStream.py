@@ -3,7 +3,7 @@
     python CaseControlStream.py --t JSON_KEY_FILE --k KEYWORDFILE --o DIR_TO_PIPE_TWEETS -m MAX_NUM_TWEET [OPTIONAL]
 
 '''
-import json,os,twitter, dropbox, gzip
+import json,os,twitter, dropbox, gzip, demjson
 
 from datetime import datetime
 from tweepy import Stream
@@ -105,11 +105,11 @@ iterator = control_stream.statuses.sample()
 counter = 0
 
 for tweet in iterator:
-    filename = os.path.join(control_path,'control_%d'%(counter/TWEETS_PER_FILE))
-    with open(filename,'a') as fid:
-        print>>fid,tweet
-        counter += 1
-        bar.next()
+
+    if tweet and 'delete' not in tweet:
+            json.dump(json.loads(json.dumps(tweet)),open(os.path.join(control_path,'control-%s-%d.json'%(tweet['id_str'],counter/TWEETS_PER_FILE)),'wb'))
+    counter+=1
+    bar.next()
     if counter > opts.MAX_NUMBER_OF_TWEETS:
         break
 bar.finish()

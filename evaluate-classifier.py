@@ -77,6 +77,7 @@ tmp = informative_tokens['positive']['usernames']
 tmp += list(n_users)
 del tmp
 
+json.dump(informative_tokens,open('informative-tokens.json','wb'))
 
 english_idx = [i for i in xrange(len(tweets)) if langid.classify(tweets[i])[0] == 'en']
 automatic_ratings = [classify(set(tweet)) for tweet in tech.cleanse([tweets[i] for i in english_idx])]

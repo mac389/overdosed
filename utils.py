@@ -1,7 +1,7 @@
 import token, tokenize, json, re, string, nltk 
 
 import matplotlib.pyplot as plt 
-
+import numpy as np 
 from matplotlib import rcParams
 from cStringIO import StringIO
 
@@ -15,6 +15,7 @@ from cStringIO import StringIO
 
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet as wn 
 lmtzr = WordNetLemmatizer()
 rcParams['text.usetex'] = True
 
@@ -22,9 +23,30 @@ standard_spelling = {'whaaaattttt':'what','annnnnnnd':'and','yeahh':'yeah','yeah
 'toooo':'to','hahhaha':'ha','fellah':'fellow','poppin':'popping','feelin':'feeling','thouygh':'though','sadsadsad':'sad',
 'longterm':' long','orang':'orange','takin':'taking'}
 
+informative_tokens = json.load(open('informative-tokens.json','rb'))
 
+synsets = {'positive' :{synset for token in informative_tokens['positive']['tokens'] for synset in wn.synsets(token)},
+      'negative':{synset for token in informative_tokens['negative']['tokens'] for synset in wn.synsets(token)}}
 
 format = lambda txt: r'\Large \textbf{\textsc{%s}}'%txt
+
+def classify(tweet):
+  copy_of_tweet = tweet
+  tweet -= set(informative_tokens['common']['tokens'])
+
+  positive_overlap =  tweet & set(informative_tokens['positive']['tokens'])
+  negative_overlap = tweet & set(informative_tokens['negative']['tokens'])
+
+  if len(negative_overlap) == 0 and len(positive_overlap) == 0:
+    tweet_synset = {synset for token in copy_of_tweet for synset in wn.synsets(token) if len(wn.synsets(token))>0}
+    if len(tweet_synset) > 0:
+      positive_overlap = tweet_synset & synsets['positive']
+      negative_overlap = tweet_synset & synsets['negative']
+    else:
+      return np.nan 
+  return 1 if len(positive_overlap) > len(negative_overlap) else 0
+
+
 def find_all(a_string, sub):
     result = []
     k = 0
@@ -41,7 +63,7 @@ def isdecimal(aStr):
   return all([ch.isdigit() or ch in string.punctuation for ch in aStr])
 
 def isusername(aStr):
-  return all([any([ch.isdigit() for ch in aStr]), any([ch.isalpha() for ch in aStr]),len(aStr)>3])
+  return all([any([ch.isdigit() for ch in aStr]), any([ch.isalpha() for ch in aStr]),len(aStr)>3]) or aStr.startswith('@')
 
 def hasvowels(aStr):
   return any([ch in 'aeiou' for ch in aStr])
@@ -55,10 +77,10 @@ def word_tokenize(tweet):
 
 def extract_tokens(list_of_tweets_as_str, count_usernames=True,is_single=False):
   if is_single:
-    list_of_words_in_tweet = set([word for word in nltk.word_tokenize(list_of_tweets_as_str.lower()) 
+    list_of_words_in_tweet = set([word for word in list_of_tweets_as_str.lower().split() 
                                 if all([not word.isdigit(),not isdecimal(word)])])
   else:
-    list_of_words_in_tweet = set([word for tweet in list_of_tweets_as_str for word in nltk.word_tokenize(tweet.lower()) 
+    list_of_words_in_tweet = set([word for tweet in list_of_tweets_as_str for word in tweet.lower().split() 
                     if all([not word.isdigit(),not isdecimal(word)])])
   list_of_words_in_tweet -= set(string.punctuation)
   list_of_words_in_tweet = {token.replace('-','').replace('_','').replace('.','').replace("'",'').replace('/','').replace('*','') 
@@ -69,8 +91,10 @@ def extract_tokens(list_of_tweets_as_str, count_usernames=True,is_single=False):
           for token in list_of_words_in_tweet}
   
   usernames = {token for token in list_of_words_in_tweet if isusername(token)} if count_usernames else {}
+  hashtags = {token for token in list_of_words_in_tweet if token.startswith('#')}
   return ({token for token in list_of_words_in_tweet 
-          if all([token not in stopwords.words('english'),len(token)>3, not isusername(token),hasvowels(token)])},usernames)
+          if all([token not in stopwords.words('english'),len(token)>3, 
+                    not isusername(token),hasvowels(token), not token.startswith('#')])},usernames,hashtags)
 
 
 def regularize_json(json_string):
