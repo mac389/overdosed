@@ -96,6 +96,8 @@ def extract_tokens(list_of_tweets_as_str, count_usernames=True,is_single=False):
           if all([token not in stopwords.words('english'),len(token)>3, 
                     not isusername(token),hasvowels(token), not token.startswith('#')])},usernames,hashtags)
 
+def get(lst,field):
+  return [item[field] for item in lst]
 
 def regularize_json(json_string):
   json_string = re.sub(r"{\s*'?(\w)", r'{"\1', json_string)
@@ -103,6 +105,15 @@ def regularize_json(json_string):
   json_string = re.sub(r"(\w)'?\s*:", r'\1":', json_string)
   json_string = re.sub(r":\s*'(\w+)'\s*([,}])", r':"\1"\2', json_string)
   return json_string
+
+def jaccard(one,two):
+  one = set(one)
+  two = set(two)
+
+  if len(one & two) == 0:
+    return 0
+  else:
+    return len(one & two) / float(len(one | two))
 
 def json_decode (json_string, *args, **kwargs):
   try:
